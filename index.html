@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kickoff Countdown</title>
+  <meta charset="UTF-8" />
+  <style>
+    /* Reset default margin/padding */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: "Arial", sans-serif;
+      background-color: #121212;  /* Dark background */
+      color: #ffffff;             /* Light text */
+      overflow: hidden;           /* Hide scrollbars (optional) */
+    }
+
+    /* Center container */
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    /* Large countdown text */
+    #countdown {
+      font-size: 12vw;         /* Adjust for desired size */
+      font-weight: bold;
+      text-align: center;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    /* Fancy message that appears when the countdown finishes */
+    #message {
+      margin-top: 1rem;
+      font-size: 5vw;
+      font-weight: 600;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    /* Simple pulsing effect */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Countdown display -->
+    <div id="countdown"></div>
+    <!-- Optional message / fireworks text will appear here -->
+    <div id="message">Kickoff Time!</div>
+  </div>
+
+  <!-- Confetti library for fireworks effect -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    // Set the date we're counting down to
+    const countDownDate = new Date("Feb 7, 2025 17:00:00").getTime();
+
+    // Grab display elements
+    const countdownElem = document.getElementById("countdown");
+    const messageElem   = document.getElementById("message");
+
+    // Update the countdown every 1 second
+    let x = setInterval(function() {
+      // Current time
+      const now = new Date().getTime();
+
+      // Distance between now and the countdown date
+      const distance = countDownDate - now;
+
+      // Time calculations
+      const days    = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours   = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // Display the result
+      countdownElem.innerHTML = days + "d " + hours + "h "
+                                + minutes + "m " + seconds + "s ";
+
+      // When the countdown finishes
+      if (distance < 0) {
+        clearInterval(x);
+        countdownElem.innerHTML = "";
+        messageElem.style.opacity = 1;
+
+        // Trigger confetti/fireworks
+        launchFireworks();
+      }
+    }, 1000);
+
+    // Simple confetti/fireworks pattern
+    function launchFireworks() {
+      // We can launch multiple "bursts"
+      const duration = 8640000 * 1000; // run for 10 days
+      const end = Date.now() + duration;
+
+      (function frame() {
+        // Launch a burst of confetti
+        confetti({
+          particleCount: 5,
+          angle: Math.random() * 360,
+          spread: 55 + Math.random() * 20,
+          origin: {
+            x: Math.random(),
+            // Random y value slightly in the lower half so confetti goes "up"
+            y: Math.random() * 0.7 + 0.1
+          }
+        });
+
+        // Keep going until time is up
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
+  </script>
+</body>
+</html>
